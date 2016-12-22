@@ -8,6 +8,11 @@ If save the source code, running for any command.
 $gbw --command "echo write" --dir "./"
 ```
 
+## Install
+```
+$ go get github.com/kazu1107/gbw
+```
+
 ## Options
 
 * **-command**  
