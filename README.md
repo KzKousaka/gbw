@@ -4,8 +4,11 @@ Go Build Watch (gbw)
 This tools is command line tool.  
 If save the source code, running for any command.
 
+## Exsample
+
 ```
-$gbw --command "echo write" --dir "./"
+$gbw --command "make && make install" --dir "./"
+$gbw --command "gb build && ./bin/process" --dir "./"
 ```
 
 ## Install
@@ -46,6 +49,20 @@ $ go get github.com/kazu1107/gbw
   + change permission:  
     **-p**    enabled  
     **-np**   disabled (default)  
+
+
+## Support Command　Syntax
+
+* `&&` "cmd1 && cmd2"  
+  if cmd1 success, run cmd2
+
+* `||` "cmd1 || cmd2"  
+  if cmd1 failed, run cmd2
+
+* `;` "cmd1 ; cmd2"
+  cmd1 run after, run cmd2
+
+If you want complicated processing you should write a script
 
 ## Trouble Shooting
 
