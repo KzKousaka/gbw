@@ -4,7 +4,7 @@ Go Build Watch (gbw)
 This tools is command line tool.  
 If save the source code, running for any command.
 
-## Exsample
+## Example
 
 ```
 $gbw --command "make && make install" --dir "./"
