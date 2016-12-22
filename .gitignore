@@ -1,4 +1,1 @@
-/pkg
-/bin
-/vendor/*
-!/vendor/manifest
+.DS_Store
