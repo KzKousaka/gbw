@@ -1,0 +1,37 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/go-fsnotify/fsnotify",
+			"repository": "https://github.com/go-fsnotify/fsnotify",
+			"revision": "fd9ec7deca8bf46ecd2a795baaacf2b3a9be1197",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-shellwords",
+			"repository": "https://github.com/mattn/go-shellwords",
+			"revision": "525bedee691b5a8df547cb5cf9f86b7fb1883e24",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/pborman/uuid",
+			"repository": "https://github.com/pborman/uuid",
+			"revision": "5007efa264d92316c43112bc573e754bc889b7b1",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/sys/unix",
+			"repository": "https://go.googlesource.com/sys",
+			"revision": "b699b7032584f0953262cb2788a0ca19bb494703",
+			"branch": "master",
+			"path": "/unix"
+		},
+		{
+			"importpath": "golang.org/x/tools/cover",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "908849c3379245f71612058fbf92cf6bf58c3c75",
+			"branch": "master",
+			"path": "/cover"
+		}
+	]
+}
