@@ -42,7 +42,7 @@ $gbw --command "echo write" --dir "./"
     **-p**    enabled  
     **-np**   disabled (default)  
 
-## Trable shoting
+## Trouble Shooting
 
 ### error "Too meny open files"
 The following is helpful  
