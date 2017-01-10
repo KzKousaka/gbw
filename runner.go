@@ -107,19 +107,22 @@ func (r *Runner) pipeSplite(args []string) {
 
 	cl := 0
 	cr := 0
+	skip := false
 
 	for {
 		cType := C_END
-		skip := false
 
 		for cr = cl; cr < len(args) && cType == C_END; cr++ {
 			switch args[cr] {
 			case "&&":
 				cType = C_WAMP
+				cr -= 1
 			case "||":
 				cType = C_WPIPE
+				cr -= 1
 			case ";":
 				cType = C_SCOLON
+				cr -= 1
 			}
 		}
 
@@ -134,8 +137,8 @@ func (r *Runner) pipeSplite(args []string) {
 			fmt.Printf("\x1b[1mrunning $ %s\x1b[0m\n", args[cl])
 			cmd = exec.Command(args[cl])
 		} else {
-			fmt.Printf("\x1b[1mrunning $ %s %s\x1b[0m\n", args[cl], strings.Join(args[cl+1:cr-1], " "))
-			cmd = exec.Command(args[cl], args[cl+1:cr-1]...)
+			fmt.Printf("\x1b[1mrunning $ %s %s\x1b[0m\n", args[cl], strings.Join(args[cl+1:cr], " "))
+			cmd = exec.Command(args[cl], args[cl+1:cr]...)
 		}
 
 		exitCode, err, kill := r.command(cmd)
