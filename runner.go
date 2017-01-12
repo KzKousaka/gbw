@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"os/exec"
+	"os/signal"
 	"syscall"
 
 	"time"
@@ -29,7 +31,7 @@ const (
 	C_SCOLON
 )
 
-func (app *App) commandRunner() {
+func (app *App) commandRunner(chExit chan bool) {
 	var commandPerser *shellwords.Parser
 	if app.command == "" {
 		return
@@ -43,8 +45,17 @@ func (app *App) commandRunner() {
 		return
 	}
 
-	r := InitRunner()
+	r := InitRunner(app.debug)
 	var last = time.Now().Add(-3 * time.Second)
+
+	chSysSignal := make(chan os.Signal, 1)
+
+	signal.Notify(
+		chSysSignal,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT)
 
 	for {
 		select {
@@ -67,7 +78,22 @@ func (app *App) commandRunner() {
 			}
 
 			last = now
-			go r.pipeSplite(cArgs)
+
+			go r.pipeSplit(cArgs)
+
+		case s := <-chSysSignal:
+
+			switch s {
+			case syscall.SIGHUP,
+				syscall.SIGINT,
+				syscall.SIGTERM,
+				syscall.SIGQUIT:
+
+				r.kill()
+				chExit <- true
+
+				return
+			}
 		}
 	}
 }
@@ -76,26 +102,34 @@ type Runner struct {
 	chKill chan bool
 	chExit chan error
 	chJob  chan bool
+	debug  bool
 }
 
-func InitRunner() *Runner {
+func InitRunner(debug bool) *Runner {
 
-	return &Runner{
+	result := &Runner{
 		chKill: make(chan bool),
 		chExit: make(chan error),
 		chJob:  make(chan bool, 1),
+		debug:  debug,
 	}
 
+	return result
 }
 
-func (r *Runner) pipeSplite(args []string) {
+func (r *Runner) kill() {
+	if len(r.chJob) > 0 {
+		r.chKill <- true
+	}
+}
+
+func (r *Runner) pipeSplit(args []string) {
 	if len(args) == 0 {
 		return
 	}
 
-	if len(r.chJob) > 0 {
-		r.chKill <- true
-	}
+	r.kill()
+
 	r.chJob <- true
 	defer func() {
 		<-r.chJob
@@ -164,6 +198,10 @@ func (r *Runner) pipeSplite(args []string) {
 			break
 		}
 	}
+
+	if r.debug {
+		log.Println("pipeSplit : exit")
+	}
 }
 
 func (r *Runner) command(cmd *exec.Cmd) (exitCode int, err error, kill bool) {
@@ -180,6 +218,8 @@ func (r *Runner) command(cmd *exec.Cmd) (exitCode int, err error, kill bool) {
 	outReader2 := io.TeeReader(outReader, &bufout)
 	errReader2 := io.TeeReader(errReader, &buferr)
 
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+
 	if err = cmd.Start(); err != nil {
 		return
 	}
@@ -191,6 +231,8 @@ func (r *Runner) command(cmd *exec.Cmd) (exitCode int, err error, kill bool) {
 		err := cmd.Wait()
 		r.chExit <- err
 	}()
+
+	fmt.Println("pid : ", cmd.Process.Pid)
 
 	killed := false
 exit:
@@ -205,13 +247,19 @@ exit:
 					}
 				}
 			}
+			fmt.Println("\x1b[1mexit process\x1b[0m")
 			break exit
 		case <-r.chKill:
 			if !killed {
+				r.killProcess(cmd.Process.Pid)
 				cmd.Process.Kill()
 				killed = true
 			}
 		}
+	}
+
+	if r.debug {
+		log.Println("runner : exit")
 	}
 	return
 }
@@ -221,4 +269,13 @@ func (r *Runner) printOutputWithHeader(color string, reader io.Reader) {
 	for scanner.Scan() {
 		fmt.Printf("%s\n", ansi.Color(scanner.Text(), color))
 	}
+}
+
+func (r *Runner) killProcess(pid int) {
+	pgid, err := syscall.Getpgid(pid)
+	if err != nil {
+		log.Println(err)
+	}
+	syscall.Kill(-pgid, 15)
+	fmt.Println("\x1b[1mprocess killed\x1b[0m")
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"container/list"
 	"log"
+	"os"
 
 	"path/filepath"
 
@@ -29,6 +30,8 @@ type App struct {
 	chDirEvent  chan FileEvent
 	chDone      chan bool
 	chFileEvent chan FileEvent
+
+	chSysSignal chan os.Signal
 }
 
 type FileEvent struct {

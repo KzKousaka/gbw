@@ -7,7 +7,8 @@ import (
 )
 
 func (app *App) watchFiles() {
-	go app.commandRunner()
+	chExit := make(chan bool, 1)
+	go app.commandRunner(chExit)
 
 	for {
 		select {
@@ -47,9 +48,13 @@ func (app *App) watchFiles() {
 				app.chDirEvent <- fEvent
 				app.chFileEvent <- fEvent
 			}
+		case <-chExit:
+			app.chDone <- true
 
 		case err := <-app.watcher.Errors:
-			log.Println(err)
+			if err != nil {
+				log.Println(err)
+			}
 			app.chDone <- true
 		}
 	}
