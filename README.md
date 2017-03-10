@@ -26,9 +26,13 @@ $ go get github.com/kazu1107/gbw
 
 * **-ext**  
   extension list  (ex "png,gif")
+
   
 * **-help**
   show help
+
+* **-wf**  
+  wait first
 
 * **-debug**  
   output debugging log

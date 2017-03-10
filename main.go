@@ -25,10 +25,11 @@ type App struct {
 	renamed bool
 	chmod   bool
 
-	debug bool
+	debug     bool
+	waitFirst bool
 
-	chDirEvent  chan FileEvent
 	chDone      chan bool
+	chDirEvent  chan FileEvent
 	chFileEvent chan FileEvent
 
 	chSysSignal chan os.Signal

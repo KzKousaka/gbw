@@ -68,7 +68,7 @@ func (app *App) commandRunner(chExit chan bool) {
 				break
 			}
 
-			if !app.checkExtension(e.file) {
+			if e.action != "init" && !app.checkExtension(e.file) {
 				break
 			}
 

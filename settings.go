@@ -17,7 +17,11 @@ const helpText = `
         extension list ` + "\x1b[2m(ex \"png,gif\")\x1b[0m" + `
   -help this view
 
-  -debug output debugging log
+  -debug bool
+        output debugging log
+
+  -wf bool
+        wait first
 
   ` + "\x1b[1m[event option]\x1b[0m" + `
   created:
@@ -60,6 +64,7 @@ func initSettings() (*App, bool, error) {
 	flag.BoolVar(&help, "help", false, "")
 	flag.BoolVar(&help, "h", false, "")
 	flag.BoolVar(&app.debug, "debug", false, "")
+	flag.BoolVar(&app.waitFirst, "wf", false, "")
 
 	flag.BoolVar(&app.created, "c", false, "enabled event for created")
 	flag.BoolVar(&ncreated, "nc", false, "disabled event for created")

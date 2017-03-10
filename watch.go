@@ -10,6 +10,12 @@ func (app *App) watchFiles() {
 	chExit := make(chan bool, 1)
 	go app.commandRunner(chExit)
 
+	if !app.waitFirst {
+		app.chFileEvent <- FileEvent{
+			action: "init",
+		}
+	}
+
 	for {
 		select {
 		case event := <-app.watcher.Events:
