@@ -79,5 +79,8 @@ Fundamental revision requires refurbishment of [fsnotfy](https://github.com/fsno
 
 ## Update
 
+* **2017.03.10 ver 0.2**  
+  add process for first run. 
+
 * **2016.12.22**  
   Created ver 0.1
